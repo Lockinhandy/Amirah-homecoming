@@ -281,14 +281,38 @@
     submitAnswer("No.", reason);
   }
 
-  function submitAnswer(answer, reason) {
-    const response = {
-      answer,
-      reason,
-      time: new Date().toLocaleString()
-    };
-    localStorage.setItem("homecomingResponse", JSON.stringify(response));
+  async function submitAnswer(answer, reason) {
+  const responseData = {
+    answer: answer,
+    reason: reason || "N/A",
+    submitted_at: new Date().toLocaleString()
+  };
+
+  try {
+    const response = await fetch("https://formspree.io/f/mnpjpbpk", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(responseData)
+    });
+
+    if (!response.ok) {
+      throw new Error("Submission failed");
+    }
+
+    localStorage.setItem(
+      "homecomingResponse",
+      JSON.stringify(responseData)
+    );
+
     show("thanksPage");
+
+  } catch (error) {
+    alert("Something went wrong sending your answer. Please try again ❤️");
+  }
+
   }
 
   function showAdmin() {
